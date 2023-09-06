@@ -1,6 +1,8 @@
 // TODO: Include packages needed for this application
-import fs from 'fs'
-import inquirer from 'inquirer'
+const fs = require('fs')
+const inquirer = require('inquirer')
+const generateMarkdown = require('./utils/generateMarkdown');
+const { ifError } = require('assert');
 
 // TODO: Create an array of questions for user input
 const questions = [
@@ -30,9 +32,10 @@ const questions = [
     message: 'List your collaborators with links to their GitHub profiles.'
   },
   {
-    type: 'input',
+    type: 'list',
     name: 'license',
-    message: 'What licenses are used?'
+    message: 'What licenses are used?',
+    choices: ['Apache 2.0', 'GNU General Public License v3.0', 'MIT License', 'None']
   }
 ]
  
@@ -42,22 +45,21 @@ inquirer
   )
   .then((answers) => {
     console.log(answers)
+    const template = generateMarkdown(answers)
+    console.log(template)
+    writeToFile('./utils/README.md', template)
   })
   .catch((error) => {
     console.log(error)
-    // if (error.isTtyError) {
-    //   // Prompt couldn't be rendered in the current environment
-    // } else {
-    //   // Something else went wrong
-    // }
   });
 
     
 // TODO: Create a function to write README file
 function writeToFile(fileName, data) {
-  // const readme = generateSlug(answers.title, {
-    //   format: 'title'
-    // })
+  fs.writeFile(fileName, data, (err)=> {
+    if (err) throw err
+    console.log("Success!")
+  })
 }
 
 // TODO: Create a function to initialize app
